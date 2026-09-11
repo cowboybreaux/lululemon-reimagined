@@ -1,4 +1,5 @@
 "use client";
+import useScrollLock from "./useScrollLock";
 
 import React, { useEffect, useRef } from "react";
 
@@ -24,6 +25,7 @@ const SECONDARY_ITEMS = [
 ];
 
 export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps) {
+  useScrollLock(isOpen);
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -40,9 +42,7 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
     panel.inert = !isOpen;
     if (!isOpen) return;
 
-    const previousOverflow = document.body.style.overflow;
     const trigger = document.querySelector<HTMLButtonElement>(".menu-control");
-    document.body.style.overflow = "hidden";
     panel.focus({ preventScroll: true });
 
     // The existing header's X remains the close control, outside this canvas.
@@ -61,9 +61,8 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
     };
     window.addEventListener("keydown", trapFocus);
     return () => {
-      document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", trapFocus);
-      trigger?.focus({ preventScroll: true });
+      if (!document.querySelector(".cart-layer.open")) trigger?.focus({ preventScroll: true });
     };
   }, [isOpen]);
 
@@ -118,9 +117,9 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
 
       <style jsx>{`
         .menu-canvas {
-          --menu-ease: cubic-bezier(0.22, 1, 0.36, 1);
+          --menu-ease: var(--ease-emphasized);
           position: fixed;
-          inset: 48px 0 0;
+          inset: 48px var(--lock-gap, 0px) 0 0;
           z-index: 40;
           outline: none;
           background: #e3243b;
@@ -128,7 +127,7 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
           clip-path: inset(0 0 100% 0);
           visibility: hidden;
           pointer-events: none;
-          transition: clip-path 550ms var(--menu-ease), visibility 0s 550ms;
+          transition: clip-path var(--motion-panel) var(--menu-ease), visibility 0s var(--motion-panel);
         }
         .menu-canvas::before {
           content: "";
@@ -146,7 +145,7 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
         .menu-scroll {
           position: relative;
           height: 100%;
-          overflow-y: auto;
+          overflow-y: auto; scrollbar-gutter: stable;
           overscroll-behavior: contain;
         }
         .menu-layout {
@@ -165,14 +164,14 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
         .primary-item {
           opacity: 0;
           transform: translateY(14px);
-          transition: opacity 220ms ease, transform 300ms var(--menu-ease);
+          transition: opacity var(--motion-fast) var(--ease-standard), transform var(--motion-base) var(--menu-ease);
           transition-delay: calc((3 - var(--item-index)) * 30ms);
         }
         .menu-open .primary-item {
           opacity: 1;
           transform: translateY(0);
-          transition-duration: 320ms;
-          transition-delay: calc(70ms + var(--item-index) * 50ms);
+          transition-duration: var(--motion-base);
+          transition-delay: calc(40ms + var(--item-index) * 35ms);
         }
         .primary-link {
           display: flex;
@@ -188,13 +187,13 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
           letter-spacing: -0.035em;
           line-height: 1.12;
           text-decoration: none;
-          transition: color 220ms ease, opacity 220ms ease, transform 280ms var(--menu-ease);
+          transition: color var(--motion-fast) var(--ease-standard), opacity var(--motion-fast) var(--ease-standard), transform var(--motion-base) var(--menu-ease);
         }
         .link-arrow {
           font-size: 0.38em;
           opacity: 0;
           transform: translateX(-6px);
-          transition: opacity 220ms ease, transform 280ms var(--menu-ease);
+          transition: opacity var(--motion-fast) var(--ease-standard), transform var(--motion-base) var(--menu-ease);
         }
         .primary-link:focus-visible {
           color: white;
@@ -206,13 +205,13 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
         .secondary-nav {
           opacity: 0;
           transform: translateY(8px);
-          transition: opacity 180ms ease, transform 250ms var(--menu-ease);
+          transition: opacity var(--motion-fast) var(--ease-standard), transform var(--motion-base) var(--menu-ease);
         }
         .menu-open .secondary-nav {
           opacity: 1;
           transform: translateY(0);
-          transition-duration: 250ms;
-          transition-delay: 300ms;
+          transition-duration: var(--motion-base);
+          transition-delay: 160ms;
         }
         .secondary-list { display: grid; gap: 0; }
         .secondary-link, .secondary-label {
@@ -229,7 +228,7 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
           text-decoration: none;
           text-underline-offset: 5px;
           text-decoration-thickness: 1px;
-          transition: color 200ms ease, transform 250ms var(--menu-ease);
+          transition: color var(--motion-fast) var(--ease-standard), transform var(--motion-base) var(--menu-ease);
         }
         .secondary-label { color: rgba(255, 248, 239, 0.6); }
         @media (hover: hover) and (pointer: fine) {

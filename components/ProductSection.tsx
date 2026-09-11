@@ -30,7 +30,7 @@ function Product({ product }: { product: (typeof products)[number] }) {
       <p className="mt-2 text-xs sm:text-sm md:text-base text-[#170306]/70">{product.price}</p>
       <QuickAdd product={{ ...product, image: `/images/products/${product.primary}`, amount: Number(product.price.replace(/[^0-9.]/g, "")) }} />
       <style jsx>{`
-        .product-primary, .product-secondary { transition: opacity 280ms ease; }
+        .product-primary, .product-secondary { transition: opacity var(--motion-base) var(--ease-standard); }
         .product-primary { opacity: 1; }
         .product-secondary { opacity: 0; }
         @media (hover: hover) and (pointer: fine) {

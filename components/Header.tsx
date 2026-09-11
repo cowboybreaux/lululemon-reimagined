@@ -18,10 +18,19 @@ export default function Header() {
 
   useEffect(() => {
     const hero = document.getElementById("fast-and-free");
-    const handleScroll = () => {
-      setHasScrolled(window.scrollY > 20);
-      setHasPassedHero(Boolean(hero && hero.getBoundingClientRect().bottom <= 0));
+    let frame = 0;
+    let scrolled = false;
+    let passed = false;
+    const update = () => {
+      frame = 0;
+      const nextScrolled = window.scrollY > 20;
+      const bottom = hero?.getBoundingClientRect().bottom ?? Infinity;
+      // A four-pixel return deadband avoids chatter at the hero boundary.
+      const nextPassed = passed ? bottom <= 4 : bottom <= 0;
+      if (nextScrolled !== scrolled) { scrolled = nextScrolled; setHasScrolled(scrolled); }
+      if (nextPassed !== passed) { passed = nextPassed; setHasPassedHero(passed); }
     };
+    const handleScroll = () => { if (!frame) frame = requestAnimationFrame(update); };
 
     const bottomHeader = document.querySelector('footer[aria-label="Bottom header"]');
     const footerObserver = new IntersectionObserver(([entry]) => {
@@ -39,6 +48,7 @@ export default function Header() {
     return () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleScroll);
+      cancelAnimationFrame(frame);
       resizeObserver.disconnect();
       footerObserver.disconnect();
     };
@@ -67,19 +77,19 @@ export default function Header() {
             <div className="relative w-8 h-6">
               {/* Top */}
               <span
-                className={`absolute left-0 top-[5px] block h-[3px] w-7 bg-white
-                transition-all duration-300 ease-out
+                className={`absolute left-0 top-[12px] block h-[3px] w-7 bg-white
+                transition-[transform,opacity] duration-[var(--motion-base)] ease-[var(--ease-emphasized)]
                 ${
                   isOpen
-                    ? "top-[10px] rotate-45"
-                    : "rotate-0"
+                    ? "rotate-45 translate-y-0"
+                    : "-translate-y-[7px]"
                 }`}
               />
 
               {/* Middle */}
               <span
                 className={`absolute left-0 top-[12px] block h-[3px] w-7 bg-white
-                transition-all duration-200
+                transition-[transform,opacity] duration-[var(--motion-base)] ease-[var(--ease-emphasized)]
                 ${
                   isOpen
                     ? "opacity-0 scale-x-0"
@@ -89,12 +99,12 @@ export default function Header() {
 
               {/* Bottom */}
               <span
-                className={`absolute left-0 top-[19px] block h-[3px] w-7 bg-white
-                transition-all duration-300 ease-out
+                className={`absolute left-0 top-[12px] block h-[3px] w-7 bg-white
+                transition-[transform,opacity] duration-[var(--motion-base)] ease-[var(--ease-emphasized)]
                 ${
                   isOpen
-                    ? "top-[10px] -rotate-45"
-                    : "rotate-0"
+                    ? "-rotate-45 translate-y-0"
+                    : "translate-y-[7px]"
                 }`}
               />
             </div>
@@ -109,13 +119,13 @@ export default function Header() {
             >
               <span
                 aria-hidden="true"
-                className={`absolute inset-0 flex items-center justify-center text-white text-[23px] sm:text-[28px] font-semibold leading-none tracking-[-0.04em] transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none ${hasPassedHero ? "opacity-0 scale-95" : "opacity-100 scale-100"}`}
+                className={`absolute inset-0 flex items-center justify-center text-white text-[23px] sm:text-[28px] font-semibold leading-none tracking-[-0.04em] transition-[opacity,transform] duration-[var(--motion-slow)] ease-[var(--ease-emphasized)] motion-reduce:transition-none ${hasPassedHero ? "opacity-0 scale-95" : "opacity-100 scale-100"}`}
               >
                 lululemon
               </span>
               <span
                 aria-hidden="true"
-                className={`absolute inset-0 flex items-center justify-center transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none ${hasPassedHero ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
+                className={`absolute inset-0 flex items-center justify-center transition-[opacity,transform] duration-[var(--motion-slow)] ease-[var(--ease-emphasized)] motion-reduce:transition-none ${hasPassedHero ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
               >
                 <Image
                   src="/images/lululogo.png"
@@ -164,7 +174,7 @@ export default function Header() {
             {/* Cart / Bag */}
             <button
               type="button"
-              aria-label={`Shopping bag, ${count} items`}
+              aria-label={`Shopping bag, ${count} ${count === 1 ? "item" : "items"}`}
               onClick={() => { setIsOpen(false); setCartOpen(true); }}
               className="relative flex items-center justify-center text-white"
             >
@@ -200,6 +210,7 @@ export default function Header() {
         >
           <div aria-hidden="true" className="marquee-background absolute inset-0" />
           <p className="sr-only">{MARQUEE_TEXT}</p>
+          <div className="marquee-scale h-full">
           <div
             aria-hidden="true"
             className="header-marquee relative flex w-max h-full items-center"
@@ -213,27 +224,30 @@ export default function Header() {
             ))}
           </div>
         </div>
+        </div>
 
       <style jsx>{`
-        .cart-count { position: absolute; top: -7px; right: -9px; min-width: 16px; height: 16px; padding: 0 3px; display: grid; place-items: center; background: #fffffa; color: #e3243b; border-radius: 50%; font-size: 10px; line-height: 1; animation: cart-count-in 350ms ease-out; }
+        .cart-count { position: absolute; top: -7px; right: -9px; min-width: 16px; height: 16px; padding: 0 3px; display: grid; place-items: center; background: #fffffa; color: #e3243b; border-radius: 50%; font-size: 10px; line-height: 1; animation: cart-count-in var(--motion-base) ease-out; }
         @keyframes cart-count-in { from { opacity: .5; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
         @media (prefers-reduced-motion: reduce) { .cart-count { animation: none; } }
         .header-shell {
           top: 0;
-          width: 100%;
-          transition: width 650ms cubic-bezier(0.22, 1.15, 0.36, 1), top 650ms cubic-bezier(0.22, 1.15, 0.36, 1);
+          left: calc((100% - var(--lock-gap, 0px)) / 2);
+          width: calc(100% - var(--lock-gap, 0px));
+          transform: translate3d(-50%, 0, 0);
+          transition: width var(--motion-slow) var(--ease-emphasized), transform var(--motion-slow) var(--ease-emphasized);
         }
         .header-surface {
           border-radius: 0;
-          transition: border-radius 650ms cubic-bezier(0.22, 1.15, 0.36, 1);
+          transition: border-radius var(--motion-slow) var(--ease-emphasized);
         }
-        .header-pill { top: 8px; width: 96%; }
+        .header-pill { transform: translate3d(-50%, 8px, 0); width: calc((100% - var(--lock-gap, 0px)) * 0.96); }
         .header-pill .header-surface { border-radius: 48px; }
         .header-dissolve {
           top: 80px;
           left: 0;
           right: 0;
-          transition: left 650ms ease, right 650ms ease, opacity 500ms ease;
+          transition: left var(--motion-slow) var(--ease-standard), right var(--motion-slow) var(--ease-standard), opacity 500ms var(--ease-standard);
           mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
         }
         .header-pill .header-dissolve { opacity: 0; }
@@ -245,23 +259,22 @@ export default function Header() {
           z-index: 50;
           top: var(--nav-height);
           left: 0;
-          width: 100%;
+          width: calc(100% - var(--lock-gap, 0px));
           height: var(--strip-height);
           padding-top: 8px;
           font-size: 11px;
           pointer-events: none;
           transform: translateY(0);
-          transition: transform 750ms cubic-bezier(0.22, 1.02, 0.36, 1),
-            height 750ms cubic-bezier(0.22, 1.02, 0.36, 1),
-            padding-top 750ms ease, font-size 750ms ease,
-            left 750ms ease, width 750ms ease, opacity 400ms ease;
+          transition: transform var(--motion-slow) var(--ease-emphasized),
+            height var(--motion-slow) var(--ease-emphasized),
+            padding-top var(--motion-slow) var(--ease-emphasized),
+            left var(--motion-slow) var(--ease-standard), width var(--motion-slow) var(--ease-standard), opacity var(--motion-panel) var(--ease-standard);
         }
         .marquee-docked {
           left: 2%;
-          width: 96%;
+          width: calc((100% - var(--lock-gap, 0px)) * 0.96);
           height: calc(var(--strip-height) * 0.7);
           padding-top: 2px;
-          font-size: 10px;
           transform: translateY(calc(100vh - var(--nav-height) - var(--strip-height) * 0.7 - env(safe-area-inset-bottom, 0px)));
           transform: translateY(calc(100dvh - var(--nav-height) - var(--strip-height) * 0.7 - env(safe-area-inset-bottom, 0px)));
           mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
@@ -276,22 +289,24 @@ export default function Header() {
           .header-dissolve { top: 88px; }
         }
         @media (min-width: 1024px) {
-          .marquee-docked { left: 4%; width: 92%; }
+          .marquee-docked { left: 4%; width: calc((100% - var(--lock-gap, 0px)) * 0.92); }
         }
         .marquee-background { background: linear-gradient(to right, transparent, #e3243b 10%, #e3243b 90%, transparent); }
-        .marquee-background::after { content: ""; position: absolute; inset: 0; background: #e3243b; opacity: 1; transition: opacity 650ms ease; }
+        .marquee-background::after { content: ""; position: absolute; inset: 0; background: #e3243b; opacity: 1; transition: opacity var(--motion-slow) var(--ease-standard); }
         .marquee-docked .marquee-background::after { opacity: 0; }
-        .menu-control, .right-controls { transition: transform 650ms cubic-bezier(0.22, 1.15, 0.36, 1); }
+        .menu-control, .right-controls { transition: transform var(--motion-slow) var(--ease-emphasized); }
         .header-pill .menu-control { transform: translateX(8px); }
         .header-pill .right-controls { transform: translateX(-8px); }
         @media (min-width: 1024px) {
-          .header-pill { top: 12px; width: 92%; }
+          .header-pill { transform: translate3d(-50%, 12px, 0); width: calc((100% - var(--lock-gap, 0px)) * 0.92); }
           .header-pill .menu-control { transform: translateX(16px); }
           .header-pill .right-controls { transform: translateX(-16px); }
         }
         @media (prefers-reduced-motion: reduce) {
           .header-shell, .header-surface, .header-dissolve, .marquee-strip, .marquee-background::after, .menu-control, .right-controls { transition: none; }
         }
+        .marquee-scale { transform: scale(1); transform-origin: left center; transition: transform var(--motion-slow) var(--ease-emphasized); }
+        .marquee-docked .marquee-scale { transform: scale(0.9090909); }
         .header-marquee {
           animation: header-marquee-right 120s linear infinite;
         }

@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import useReducedMotion from "./useReducedMotion";
 
 const collections = [
   {
@@ -49,7 +50,7 @@ function CampaignPhoto({ collection, priority }: { collection: (typeof collectio
           -webkit-mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
           mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
         }
-        .portrait-photo, .desktop-photo { transition: opacity 400ms ease-in-out; }
+        .portrait-photo, .desktop-photo { transition: opacity var(--motion-panel) var(--ease-standard); }
         .portrait-photo { opacity: 1; }
         .desktop-photo { opacity: 0; background: #fffffa; }
         @media (min-width: 1024px) {
@@ -64,6 +65,8 @@ function CampaignPhoto({ collection, priority }: { collection: (typeof collectio
 }
 
 export default function Hero() {
+  const reducedMotion = useReducedMotion();
+  const sectionRef = useRef<HTMLElement>(null);
   const [position, setPosition] = useState(1);
   const [animate, setAnimate] = useState(true);
   const [blending, setBlending] = useState(false);
@@ -71,55 +74,57 @@ export default function Hero() {
   const active = (position + collections.length - 1) % collections.length;
 
   const move = useCallback((direction: number) => {
+    if (reducedMotion) {
+      setAnimate(false);
+      setPosition(current => ((current - 1 + direction + collections.length) % collections.length) + 1);
+      return;
+    }
     if (moving.current) return;
     moving.current = true;
     setBlending(true);
     setAnimate(true);
     setPosition((current) => current + direction);
-  }, []);
+  }, [reducedMotion]);
 
   useEffect(() => {
-    if (blending) return;
+    if (blending || reducedMotion) return;
     const timer = window.setTimeout(() => move(1), 5000);
     return () => window.clearTimeout(timer);
-  }, [position, blending, move]);
+  }, [position, blending, move, reducedMotion]);
 
-  const finishTransition = (event: React.TransitionEvent<HTMLDivElement>) => {
-    if (event.target !== event.currentTarget || event.propertyName !== "transform") return;
-    if (position === 0 || position === panels.length - 1) {
-      setAnimate(false);
-      setPosition(position === 0 ? collections.length : 1);
-    }
+  const settle = useCallback(() => {
+    setPosition(current => current === 0 ? collections.length : current === panels.length - 1 ? 1 : current);
     setAnimate(false);
     moving.current = false;
     setBlending(false);
-  };
-  const detailsRef = useRef<HTMLDivElement>(null);
-  const [detailsVisible, setDetailsVisible] = useState(false);
-
-  useEffect(() => {
-    const element = detailsRef.current;
-
-    if (!element) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setDetailsVisible(true);
-        }
-      },
-      {
-        threshold: 0.25,
-      }
-    );
-
-    observer.observe(element);
-
-    return () => observer.disconnect();
   }, []);
+  const finishTransition = (event: React.TransitionEvent<HTMLDivElement>) => {
+    if (event.target === event.currentTarget && event.propertyName === "transform") settle();
+  };
+  useEffect(() => {
+    if (!blending) return;
+    if (reducedMotion) { settle(); return; }
+    // Recover if a transition is cancelled by a breakpoint or browser visibility change.
+    const duration = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--motion-slow")) || 650;
+    const timer = window.setTimeout(settle, duration + 80);
+    return () => window.clearTimeout(timer);
+  }, [blending, reducedMotion, settle]);
+  const [detailsVisible, setDetailsVisible] = useState(false);
+  useEffect(() => {
+    if (reducedMotion) { setDetailsVisible(true); return; }
+    const observer = new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.isIntersecting)) {
+        setDetailsVisible(true);
+        observer.disconnect();
+      }
+    }, { threshold: 0.15 });
+    sectionRef.current?.querySelectorAll(".campaign-details").forEach(element => observer.observe(element));
+    return () => observer.disconnect();
+  }, [reducedMotion]);
 
   return (
     <section
+      ref={sectionRef}
       id="fast-and-free"
       className={`relative w-full overflow-hidden bg-[#fffffa] ${blending ? "is-sliding" : ""}`}
       aria-roledescription="carousel"
@@ -129,7 +134,7 @@ export default function Hero() {
         className="flex items-stretch"
         style={{
           transform: `translate3d(-${position * 100}%, 0, 0)`,
-          transition: animate ? "transform 700ms cubic-bezier(0.22, 1, 0.36, 1)" : "none",
+          transition: animate && !reducedMotion ? "transform var(--motion-slow) var(--ease-emphasized)" : "none",
         }}
         onTransitionEnd={finishTransition}
       >
@@ -173,8 +178,7 @@ export default function Hero() {
 
       {/* DESCRIPTION SECTION */}
       <div
-        ref={index === 1 ? detailsRef : undefined}
-        className="relative z-20 -mt-24 sm:-mt-28 md:-mt-36 bg-[#fffffa] px-7 sm:px-10 md:px-14 lg:px-20 pt-1 sm:pt-3 md:pt-5 pb-24 md:pb-36"
+        className="campaign-details relative z-20 -mt-24 sm:-mt-28 md:-mt-36 bg-[#fffffa] px-7 sm:px-10 md:px-14 lg:px-20 pt-1 sm:pt-3 md:pt-5 pb-24 md:pb-36"
       >
         <div
           className={`
@@ -186,13 +190,14 @@ export default function Hero() {
             gap-12
             md:gap-20
             items-end
-            transition-all
-            duration-1000
-            ease-[cubic-bezier(0.16,1,0.3,1)]
+            transition-[opacity,transform]
+            duration-[var(--motion-slow)]
+            ease-[var(--ease-emphasized)]
+            motion-reduce:opacity-100 motion-reduce:transform-none
             ${
               detailsVisible
-                ? "opacity-100 translate-x-0"
-                : "opacity-0 -translate-x-12"
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-4"
             }
           `}
         >
@@ -212,11 +217,11 @@ export default function Hero() {
             <button
               type="button"
               tabIndex={index === position ? 0 : -1}
-              className="group inline-flex items-center justify-between gap-8 border border-[#170306]/60 px-7 py-4 text-xs font-semibold tracking-[0.2em] uppercase text-[#170306] transition-all duration-300 hover:bg-[#170306] hover:text-[#fffffa]"
+              className="group inline-flex items-center justify-between gap-8 border border-[#170306]/60 px-7 py-4 text-xs font-semibold tracking-[0.2em] uppercase text-[#170306] transition-colors duration-[var(--motion-fast)] hover:bg-[#170306] hover:text-[#fffffa]"
             >
               <span>SHOP THE COLLECTION</span>
 
-              <span className="transition-transform duration-300 group-hover:translate-x-1">
+              <span className="transition-transform duration-[var(--motion-fast)] group-hover:translate-x-1">
                 →
               </span>
             </button>
@@ -249,7 +254,7 @@ export default function Hero() {
       </div>
       <p className="sr-only">{active + 1} of {collections.length}: {collections[active].name}</p>
       <style jsx>{`
-        .campaign-frame { aspect-ratio: 2 / 3; transition: aspect-ratio 400ms ease-in-out; }
+        .campaign-frame { aspect-ratio: 2 / 3; }
         @media (min-width: 1024px) {
           .campaign-frame { aspect-ratio: 3 / 2; }
           [data-collection-title="Align"] { text-shadow: 0 1px 4px rgba(23, 3, 6, 0.75); }

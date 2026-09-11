@@ -60,12 +60,12 @@ export default function MetalVentSection() {
           <div className="mt-10 md:mt-14 mb-6 flex items-center justify-between gap-4">
             <h3 id="metal-vent-products" className="text-lg sm:text-xl font-semibold">Shop Metal Vent Tech</h3>
             <div className="flex gap-2">
-              <button type="button" aria-label="Previous Metal Vent Tech products" onClick={() => setSlide((slide + pageCount - 1) % pageCount)} className="h-11 w-9 text-2xl transition-opacity hover:opacity-60">‹</button>
-              <button type="button" aria-label="Next Metal Vent Tech products" onClick={() => setSlide((slide + 1) % pageCount)} className="h-11 w-9 text-2xl transition-opacity hover:opacity-60">›</button>
+              <button type="button" aria-label="Previous Metal Vent Tech products" onClick={() => setSlide(current => (current + pageCount - 1) % pageCount)} className="h-11 w-9 text-2xl transition-opacity hover:opacity-60">‹</button>
+              <button type="button" aria-label="Next Metal Vent Tech products" onClick={() => setSlide(current => (current + 1) % pageCount)} className="h-11 w-9 text-2xl transition-opacity hover:opacity-60">›</button>
             </div>
           </div>
           <div role="region" aria-roledescription="carousel" aria-labelledby="metal-vent-products" className="mx-auto max-w-[960px] lg:max-w-[1400px] overflow-hidden">
-            <div className="flex transition-transform duration-500 ease-out motion-reduce:transition-none" style={{ transform: `translateX(-${slide * 100}%)` }}>
+            <div className="flex transition-transform duration-[var(--motion-panel)] ease-[var(--ease-emphasized)] motion-reduce:transition-none" style={{ transform: `translateX(-${slide * 100}%)` }}>
               {Array.from({ length: pageCount }, (_, page) => page).map((page) => (
                 <div key={page} role="group" aria-roledescription="slide" aria-label={`${page + 1} of ${pageCount}`} aria-hidden={slide !== page} className="w-full shrink-0 grid grid-cols-2 lg:grid-cols-4 gap-x-3 sm:gap-x-6 md:gap-x-10">
                   {products.slice(page * perPage, page * perPage + perPage).map((product, index) => {

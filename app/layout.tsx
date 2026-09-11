@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { calibre } from "./fonts";
 import "./globals.css";
+import "./motion.css";
 import { CartProvider } from "@/components/CartContext";
 import CartDrawer from "@/components/CartDrawer";
 

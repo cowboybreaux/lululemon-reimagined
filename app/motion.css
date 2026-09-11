@@ -1,0 +1,33 @@
+/* A small shared vocabulary; continuous marquees keep their own linear clock. */
+:root {
+  --motion-fast: 180ms;
+  --motion-base: 300ms;
+  --motion-panel: 420ms;
+  --motion-slow: 650ms;
+  --motion-enter: 650ms;
+  --motion-stagger: 70ms;
+  --ease-standard: cubic-bezier(.2, .7, .3, 1);
+  --ease-emphasized: cubic-bezier(.22, 1, .36, 1);
+}
+/* Reserve the scrollbar lane through modal opening and closing. */
+html { scrollbar-gutter: stable; }
+button, a { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+button { transition-duration: var(--motion-fast); transition-timing-function: var(--ease-standard); }
+button:not(:disabled):active { opacity: .78; }
+button:disabled { cursor: default; }
+:where(button, a):focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+@media (max-width: 639px) {
+  :root { --motion-base: 260ms; --motion-panel: 360ms; --motion-slow: 580ms; --motion-enter: 580ms; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  :root { --motion-fast: 0ms; --motion-base: 0ms; --motion-panel: 0ms; --motion-slow: 0ms; --motion-enter: 0ms; --motion-stagger: 0ms; }
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0s !important; transition-delay: 0s !important; animation: none !important; }
+}
+
+@media (pointer: coarse) {
+  /* Increase hit areas without enlarging the visible header icons. */
+  .right-controls button { position: relative; }
+  .right-controls button::before { content: ""; position: absolute; inset: -10px; }
+  .quick-add .size { min-width: 40px; min-height: 40px; }
+}

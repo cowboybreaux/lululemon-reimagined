@@ -69,7 +69,7 @@ export default function ProductCard({ productId, className = "", children, ...pr
     let stopObserving: (() => void) | undefined;
     const reveal = (delay = 0) => {
       revealedProducts.add(productId);
-      card.style.setProperty("--product-delay", `${delay}ms`);
+      card.style.setProperty("--product-delay", `calc(${delay / 85} * var(--motion-stagger))`);
       card.dataset.entrance = card.dataset.entrance === "pending" && !motion.matches ? "visible" : "settled";
       stopObserving?.();
     };
@@ -108,7 +108,7 @@ export default function ProductCard({ productId, className = "", children, ...pr
           transform: translateY(var(--product-travel));
         }
         .product-card[data-entrance="visible"] {
-          animation: product-surface 750ms cubic-bezier(0.22, 1, 0.36, 1) var(--product-delay, 0ms) both;
+          animation: product-surface var(--motion-enter) var(--ease-emphasized) var(--product-delay, 0ms) both;
         }
         .product-card:focus-within { animation: none; opacity: 1; transform: none; }
         @keyframes product-surface {
