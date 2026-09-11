@@ -1,0 +1,1 @@
+self.__NEXT_FONT_MANIFEST="{\"pages\":{},\"app\":{\"/Users/azib/lululemon-reimagined/app/layout\":[\"static/media/7a0c3244c0f01da0-s.p.otf\"]},\"appUsingSizeAdjust\":true,\"pagesUsingSizeAdjust\":false}"
