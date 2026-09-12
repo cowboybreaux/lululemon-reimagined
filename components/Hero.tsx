@@ -47,10 +47,8 @@ function CampaignPhoto({ collection, priority }: { collection: (typeof collectio
       <style jsx>{`
         .campaign-photo {
           position: absolute; inset: 0; z-index: 1;
-          -webkit-mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
-          mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
         }
-        .portrait-photo, .desktop-photo { transition: opacity var(--motion-panel) var(--ease-standard); }
+        .portrait-photo, .desktop-photo { transition: opacity 500ms cubic-bezier(0.22, 1, 0.36, 1); }
         .portrait-photo { opacity: 1; }
         .desktop-photo { opacity: 0; background: #fffffa; }
         @media (min-width: 1024px) {
@@ -105,7 +103,7 @@ export default function Hero() {
     if (!blending) return;
     if (reducedMotion) { settle(); return; }
     // Recover if a transition is cancelled by a breakpoint or browser visibility change.
-    const duration = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--motion-slow")) || 650;
+    const duration = 500;
     const timer = window.setTimeout(settle, duration + 80);
     return () => window.clearTimeout(timer);
   }, [blending, reducedMotion, settle]);
@@ -123,34 +121,17 @@ export default function Hero() {
   }, [reducedMotion]);
 
   return (
-    <section
-      ref={sectionRef}
-      id="fast-and-free"
-      className={`relative w-full overflow-hidden bg-[#fffffa] ${blending ? "is-sliding" : ""}`}
-      aria-roledescription="carousel"
-      aria-label="Collection campaigns"
-    >
-      <div
-        className="flex items-stretch"
-        style={{
-          transform: `translate3d(-${position * 100}%, 0, 0)`,
-          transition: animate && !reducedMotion ? "transform var(--motion-slow) var(--ease-emphasized)" : "none",
-        }}
-        onTransitionEnd={finishTransition}
-      >
-        {panels.map((collection, index) => (
-          <div
-            key={index}
-            className="w-full min-w-full flex-[0_0_100%] bg-[#fffffa]"
-            role="group"
-            aria-roledescription="slide"
-            aria-label={`${collection.name} — ${collection.category}`}
-            aria-hidden={index !== position}
-          >
-      {/* HERO IMAGE */}
-      <div className="campaign-frame relative w-full bg-[#fffffa]">
-  <CampaignPhoto collection={collection} priority={index > 0 && index <= collections.length} />
-
+    <section ref={sectionRef} id="fast-and-free" className="relative w-full overflow-hidden bg-[#fffffa]" aria-roledescription="carousel" aria-label="Collection campaigns">
+      <div className="campaign-frame relative w-full overflow-hidden bg-[#fffffa]">
+        <div className="absolute inset-0 flex items-stretch"
+          style={{ transform: `translate3d(-${position * 100}%, 0, 0)`, transition: animate && !reducedMotion ? "transform 500ms cubic-bezier(0.22, 1, 0.36, 1)" : "none" }}
+          onTransitionEnd={finishTransition}>
+          {panels.map((collection, index) => (
+            <div key={index} className="relative w-full min-w-full flex-[0_0_100%]" role="group" aria-roledescription="slide" aria-label={`${collection.name} — ${collection.category}`} aria-hidden={index !== position}>
+              <CampaignPhoto collection={collection} priority={index > 0 && index <= collections.length} />
+            </div>
+          ))}
+        </div>
   <div
     aria-hidden="true"
     className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex h-[30%] flex-col"
@@ -165,7 +146,9 @@ export default function Hero() {
     <div className="h-24 shrink-0 bg-[#fffffa] sm:h-28 md:h-36" />
   </div>
 
-  <div data-collection-title={collection.name} className="absolute inset-x-0 bottom-[32%] z-20 flex items-center justify-between px-[4vw] pointer-events-none">
+        {collections.map((collection, index) => (
+          <React.Fragment key={collection.name}>
+  <div data-collection-title={collection.name} aria-hidden={index !== active} className={`text-layer ${index === active ? "active" : ""} absolute inset-x-0 bottom-[32%] z-20 flex items-center justify-between px-[4vw] pointer-events-none`}>
     <span style={collection.name === "Wunder Train" ? { fontSize: "clamp(3rem, 8vw, 9rem)" } : undefined} className="font-calibre text-white text-[clamp(3.5rem,8vw,9rem)] leading-none tracking-[-0.05em] font-semibold lowercase whitespace-nowrap">
       {collection.leftTitle}
     </span>
@@ -174,71 +157,38 @@ export default function Hero() {
       {collection.rightTitle}
     </span>
   </div>
-</div>
-
-      {/* DESCRIPTION SECTION */}
-      <div
-        className="campaign-details relative z-20 -mt-24 sm:-mt-28 md:-mt-36 bg-[#fffffa] px-7 sm:px-10 md:px-14 lg:px-20 pt-1 sm:pt-3 md:pt-5 pb-24 md:pb-36"
-      >
-        <div
-          className={`
-            mx-auto
-            max-w-7xl
-            grid
-            grid-cols-1
-            md:grid-cols-[1.5fr_1fr]
-            gap-12
-            md:gap-20
-            items-end
-            transition-[opacity,transform]
-            duration-[var(--motion-slow)]
-            ease-[var(--ease-emphasized)]
-            motion-reduce:opacity-100 motion-reduce:transform-none
-            ${
-              detailsVisible
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-4"
-            }
-          `}
-        >
-          {/* LEFT COPY */}
-          <div className="max-w-2xl">
-            <p className="text-sm sm:text-base uppercase tracking-[0.22em] text-[#170306]/70 font-bold mb-6">
-              {collection.heading}
-            </p>
-
-            <p className="text-[15px] sm:text-[17px] md:text-[19px] font-normal leading-[1.5] text-[#170306] text-justify">
-              {collection.description}
-            </p>
+          </React.Fragment>
+        ))}
+      </div>
+      <div className="campaign-details relative z-20 -mt-24 sm:-mt-28 md:-mt-36 bg-[#fffffa] px-7 sm:px-10 md:px-14 lg:px-20 pt-1 sm:pt-3 md:pt-5 pb-24 md:pb-36">
+        <div className={`mx-auto max-w-7xl grid grid-cols-1 md:grid-cols-[1.5fr_1fr] gap-12 md:gap-20 items-end transition-opacity duration-[500ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:opacity-100 ${detailsVisible ? "opacity-100" : "opacity-0"}`}>
+          <div className="copy-stack max-w-2xl">
+            {collections.map((collection, index) => (
+              <div key={collection.name} aria-hidden={index !== active} className={`copy-layer ${index === active ? "active" : ""}`}>
+                <p className="text-sm sm:text-base uppercase tracking-[0.22em] text-[#170306]/70 font-bold mb-6">{collection.heading}</p>
+                <p className="description text-[15px] sm:text-[17px] md:text-[19px] font-normal leading-[1.5] text-[#170306] text-justify">{collection.description}</p>
+              </div>
+            ))}
           </div>
-
-          {/* RIGHT CTA */}
           <div className="md:flex md:justify-end">
-            <button
-              type="button"
-              tabIndex={index === position ? 0 : -1}
-              className="group inline-flex items-center justify-between gap-8 border border-[#170306]/60 px-7 py-4 text-xs font-semibold tracking-[0.2em] uppercase text-[#170306] transition-colors duration-[var(--motion-fast)] hover:bg-[#170306] hover:text-[#fffffa]"
-            >
-              <span>SHOP THE COLLECTION</span>
-
-              <span className="transition-transform duration-[var(--motion-fast)] group-hover:translate-x-1">
-                →
+            <button type="button" aria-label={`Explore '${collections[active].name.replace("&", "and").toUpperCase()}'`} className="group inline-flex max-w-full items-center justify-between gap-8 border border-[#170306]/60 px-7 py-4 text-xs font-semibold tracking-[0.2em] uppercase text-[#170306] transition-colors duration-[500ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-[#170306] hover:text-[#fffffa]">
+              <span className="cta-labels" aria-hidden="true">
+                {collections.map((collection, index) => (
+                  <span key={collection.name} className={`text-layer ${index === active ? "active" : ""}`}>EXPLORE '{collection.name.replace("&", "AND").toUpperCase()}'</span>
+                ))}
               </span>
+              <span aria-hidden="true" className="transition-transform duration-[500ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-1">→</span>
             </button>
           </div>
         </div>
       </div>
-          </div>
-        ))}
-      </div>
-
       <div className="campaign-frame pointer-events-none absolute inset-x-0 top-0">
         <div className="absolute inset-x-[2vw] top-[35%] z-30 flex justify-between">
           <button
             type="button"
             aria-label="Previous collection"
             onClick={() => move(-1)}
-            className="pointer-events-auto flex h-11 w-11 items-center justify-center text-2xl text-white [text-shadow:0_1px_4px_rgba(0,0,0,0.8)] transition-opacity hover:opacity-70 focus-visible:outline focus-visible:outline-1 focus-visible:outline-white"
+            className="pointer-events-auto flex h-11 w-11 items-center justify-center text-2xl text-white [text-shadow:0_1px_4px_rgba(0,0,0,0.8)] transition-opacity duration-[500ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:opacity-70 focus-visible:outline focus-visible:outline-1 focus-visible:outline-white"
           >
             ‹
           </button>
@@ -246,26 +196,32 @@ export default function Hero() {
             type="button"
             aria-label="Next collection"
             onClick={() => move(1)}
-            className="pointer-events-auto flex h-11 w-11 items-center justify-center text-2xl text-white [text-shadow:0_1px_4px_rgba(0,0,0,0.8)] transition-opacity hover:opacity-70 focus-visible:outline focus-visible:outline-1 focus-visible:outline-white"
+            className="pointer-events-auto flex h-11 w-11 items-center justify-center text-2xl text-white [text-shadow:0_1px_4px_rgba(0,0,0,0.8)] transition-opacity duration-[500ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:opacity-70 focus-visible:outline focus-visible:outline-1 focus-visible:outline-white"
           >
             ›
           </button>
         </div>
       </div>
+
       <p className="sr-only">{active + 1} of {collections.length}: {collections[active].name}</p>
       <style jsx>{`
         .campaign-frame { aspect-ratio: 2 / 3; }
+        .copy-stack, .cta-labels { display: grid; }
+        .copy-layer, .cta-labels .text-layer { grid-area: 1 / 1; min-width: 0; }
+        .text-layer, .copy-layer { opacity: 0; pointer-events: none; transition: opacity 500ms cubic-bezier(0.22, 1, 0.36, 1); }
+        .text-layer.active, .copy-layer.active { opacity: 1; transition-delay: 0ms; }
+        .copy-layer.active .description { animation: description-enter 500ms cubic-bezier(0.22, 1, 0.36, 1) backwards; }
+        @keyframes description-enter {
+          from { opacity: 0; transform: translateX(-12px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
         @media (min-width: 1024px) {
           .campaign-frame { aspect-ratio: 3 / 2; }
           [data-collection-title="Align"] { text-shadow: 0 1px 4px rgba(23, 3, 6, 0.75); }
         }
-        /* Only overlapping photographic layers blend; text and controls stay crisp. */
-        .is-sliding :global(.campaign-photo) {
-          -webkit-mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
-          mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
-        }
         @media (prefers-reduced-motion: reduce) {
-          .campaign-frame { transition: none; }
+          .text-layer, .copy-layer { transition: none; }
+          .copy-layer.active .description { animation: none; }
         }
       `}</style>
     </section>

@@ -61,8 +61,7 @@ export default function Header() {
         <div
           className={`header-dissolve absolute top-full h-5 pointer-events-none
           bg-gradient-to-b from-[#e3243b] to-transparent
-          transition-opacity duration-500
-          ${hasScrolled ? "opacity-100" : "opacity-0"}`}
+          ${hasScrolled && !hasPassedHero ? "dissolve-visible" : ""}`}
         />
 
         <div className="header-surface relative overflow-hidden bg-[#e3243b]">
@@ -247,10 +246,18 @@ export default function Header() {
           top: 80px;
           left: 0;
           right: 0;
-          transition: left var(--motion-slow) var(--ease-standard), right var(--motion-slow) var(--ease-standard), opacity 500ms var(--ease-standard);
-          mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
+          width: 100%;
+          opacity: 0;
+          transition: opacity 150ms ease-out;
+          -webkit-mask-image: none;
+          mask-image: none;
         }
-        .header-pill .header-dissolve { opacity: 0; }
+        /* Fade out at the start of contraction; return near the end of expansion. */
+        .header-dissolve.dissolve-visible {
+          opacity: 1;
+          transition-delay: calc(var(--motion-slow) * 0.7);
+        }
+        .header-pill .header-dissolve { opacity: 0; transition-delay: 0ms; }
         /* Separate fixed layer: the transformed pill must not contain the ticker. */
         .marquee-strip {
           --nav-height: 48px;
@@ -268,15 +275,15 @@ export default function Header() {
           transition: transform var(--motion-slow) var(--ease-emphasized),
             height var(--motion-slow) var(--ease-emphasized),
             padding-top var(--motion-slow) var(--ease-emphasized),
-            left var(--motion-slow) var(--ease-standard), width var(--motion-slow) var(--ease-standard), opacity var(--motion-panel) var(--ease-standard);
+            left var(--motion-slow) var(--ease-standard), width var(--motion-slow) var(--ease-standard), opacity 700ms ease;
         }
         .marquee-docked {
           left: 2%;
           width: calc((100% - var(--lock-gap, 0px)) * 0.96);
           height: calc(var(--strip-height) * 0.7);
           padding-top: 2px;
-          transform: translateY(calc(100vh - var(--nav-height) - var(--strip-height) * 0.7 - env(safe-area-inset-bottom, 0px)));
-          transform: translateY(calc(100dvh - var(--nav-height) - var(--strip-height) * 0.7 - env(safe-area-inset-bottom, 0px)));
+          transform: translateY(calc(100vh - var(--nav-height) - var(--strip-height) * 0.7 - env(safe-area-inset-bottom, 0px) - 12px));
+          transform: translateY(calc(100dvh - var(--nav-height) - var(--strip-height) * 0.7 - env(safe-area-inset-bottom, 0px) - 12px));
           mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
         }
         .marquee-hidden { opacity: 0; }

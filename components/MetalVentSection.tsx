@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import ProductCard from "./ProductCard";
 import QuickAdd from "./QuickAdd";
+import styles from "./MetalVentSection.module.css";
 
 const metalVentSizes = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"];
 const productName = "Metal Vent Tech Relaxed-Fit Short-Sleeve Shirt";
@@ -34,7 +35,7 @@ export default function MetalVentSection() {
   }, []);
 
   return (
-    <section aria-label="Lewis Hamilton in Metal Vent Tech" className="bg-[#361502] text-[#FFE7C2]">
+    <section aria-label="Lewis Hamilton in Metal Vent Tech" className={styles.section}>
       <div className="bg-[#fffffa] px-7 sm:px-10 md:px-14 lg:px-20 pb-12 md:pb-16">
         <hr className="mx-auto max-w-7xl border-0 border-t border-[#170306]/20" />
       </div>

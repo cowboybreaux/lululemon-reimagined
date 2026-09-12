@@ -30,6 +30,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       ? current.map(item => item.key === key ? { ...item, quantity: item.quantity + 1 } : item)
       : [...current, { ...product, key, size, quantity: 1 }]);
     setRevision(current => current + 1);
+    setOpen(true);
   }, []);
   const actions = useMemo(() => ({ addItem }), [addItem]);
   return <CartActionsContext.Provider value={actions}><CartContext.Provider value={{ items, isOpen, setOpen, revision, addItem,

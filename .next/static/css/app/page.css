@@ -1,0 +1,41 @@
+/*!**********************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[7].use[3]!./components/MetalVentSection.module.css ***!
+  \**********************************************************************************************************************************************************************************************************************************************************************************/
+@font-face {
+  font-family: "Metal Vent Abduction";
+  src: url("/fonts/abduction2002.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+.MetalVentSection_section__JH82K {
+  background-color: #240f00;
+  color: #f8f0ff;
+}
+
+/* Override local utility and nested Quick Add text colors only in this section. */
+.MetalVentSection_section__JH82K :is(h2, h3, h4, p, span, button) {
+  color: #f8f0ff !important;
+}
+
+/* Quick Add uses currentColor for borders: retain its original border colors. */
+.MetalVentSection_section__JH82K button:is([aria-pressed], [class~="add"]) {
+  border-color: #ffe7c2;
+}
+
+.MetalVentSection_section__JH82K button[aria-pressed="true"] {
+  border-color: #361502;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .MetalVentSection_section__JH82K button[class~="add"]:not(:disabled):hover {
+    border-color: #361502;
+  }
+}
+
+/* The campaign heading alone uses the supplied display face. */
+.MetalVentSection_section__JH82K h2 {
+  font-family: "Metal Vent Abduction", sans-serif;
+}
+

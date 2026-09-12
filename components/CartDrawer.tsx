@@ -51,12 +51,12 @@ export default function CartDrawer() {
   return <div className={`cart-layer ${isOpen ? "open" : ""}`} aria-hidden={!isOpen}>
     <div className="backdrop" onClick={() => setOpen(false)} />
     <aside ref={panel} onTransitionEnd={event => { if (event.target === event.currentTarget && event.propertyName === "transform" && isOpen && !panel.current?.contains(document.activeElement)) close.current?.focus({ preventScroll: true }); }} role="dialog" aria-modal={isOpen ? true : undefined} aria-labelledby="cart-title" className="drawer">
-      <div className="flex items-center justify-between border-b border-[#170306]/20 px-6 sm:px-8 py-5">
+      <div className="shrink-0 flex items-center justify-between border-b border-[#170306]/20 px-6 sm:px-8 py-5">
         <h2 id="cart-title" className="text-2xl font-semibold">Your bag <span className="text-base opacity-60">({count})</span></h2>
         <button ref={close} onClick={() => setOpen(false)} type="button" aria-label="Close shopping bag" className="h-10 w-10 text-3xl">×</button>
       </div>
       <div className="items px-6 sm:px-8">
-        {!items.length ? <p className="py-12 text-lg opacity-70">Your bag is empty.</p> : <ul>
+        {!items.length ? <p className="py-8 text-lg opacity-70">Your bag is empty.</p> : <ul>
           {items.map(item => <li key={item.key} className="flex gap-4 overflow-hidden border-b border-[#170306]/20 py-6">
             <div className="relative w-24 shrink-0 aspect-[5/6] self-start border border-[#170306]/20"><Image src={item.image} alt={item.name} fill unoptimized className="object-contain" sizes="96px" /></div>
             <div className="min-w-0 flex-1">
@@ -76,14 +76,42 @@ export default function CartDrawer() {
       </div>
     </aside>
     <style jsx>{`
-      .cart-layer { position: fixed; inset: 0; z-index: 100; visibility: hidden; pointer-events: none; transition: visibility 0s var(--motion-panel); }
+      .cart-layer { --cart-motion: 350ms; position: fixed; inset: 0; z-index: 100; visibility: hidden; pointer-events: none; transition: visibility 0s var(--cart-motion); }
       .cart-layer.open { visibility: visible; pointer-events: auto; transition-delay: 0s; }
-      .backdrop { position: absolute; inset: 0; background: rgba(23,3,6,.25); opacity: 0; transition: opacity var(--motion-panel) var(--ease-standard); }
+      .backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.15); opacity: 0; transition: opacity var(--cart-motion) var(--ease-standard); }
       .open .backdrop { opacity: 1; }
-      .drawer { position: absolute; inset: 0 0 0 auto; width: min(100%, 480px); height: 100%; background: #fffffa; color: #170306; display: flex; flex-direction: column; transform: translateX(100%); transition: transform var(--motion-panel) var(--ease-emphasized); }
-      .open .drawer { transform: translateX(0); }
-      .items { overflow-y: auto; scrollbar-gutter: stable; overscroll-behavior: contain; flex: 1; min-height: 0; }
-      .summary { padding-bottom: max(24px, env(safe-area-inset-bottom)); }
+      .drawer {
+        --cart-top: calc(max(var(--header-height, 80px), env(safe-area-inset-top, 0px)) + 20px);
+        position: absolute;
+        top: var(--cart-top);
+        right: max(24px, env(safe-area-inset-right, 0px));
+        width: min(420px, calc(100% - 48px));
+        max-height: calc(100vh - var(--cart-top) - max(24px, env(safe-area-inset-bottom, 0px)));
+        max-height: calc(100dvh - var(--cart-top) - max(24px, env(safe-area-inset-bottom, 0px)));
+        border-radius: 24px;
+        overflow: hidden;
+        background: #fffffa;
+        color: #170306;
+        display: flex;
+        flex-direction: column;
+        opacity: 0;
+        transform: translateX(16px) scale(.98);
+        transform-origin: top right;
+        transition: transform var(--cart-motion) var(--ease-emphasized), opacity var(--cart-motion) var(--ease-standard);
+      }
+      .open .drawer { opacity: 1; transform: translateX(0) scale(1); }
+      .items { overflow-y: auto; scrollbar-gutter: stable; overscroll-behavior: contain; flex: 0 1 auto; min-height: 0; }
+      .summary { flex-shrink: 0; padding-bottom: 24px; }
+      @media (max-width: 639px) {
+        .cart-layer { --cart-motion: 300ms; }
+        .drawer {
+          right: max(12px, env(safe-area-inset-right, 0px));
+          left: max(12px, env(safe-area-inset-left, 0px));
+          width: auto;
+          max-height: calc(100vh - var(--cart-top) - max(12px, env(safe-area-inset-bottom, 0px)));
+          max-height: calc(100dvh - var(--cart-top) - max(12px, env(safe-area-inset-bottom, 0px)));
+        }
+      }
       button:focus-visible { outline: 2px solid #e3243b; outline-offset: 3px; }
       @media (prefers-reduced-motion: reduce) { .cart-layer, .backdrop, .drawer { transition: none; } }
     `}</style>
