@@ -63,16 +63,30 @@ body {
   color: #ffffff;
 }
 
-/* Custom scrollbar */
+/* Clear every native scrollbar surface without adding thumb padding. */
 ::-webkit-scrollbar {
   width: 6px;
+  background: transparent;
 }
-::-webkit-scrollbar-track {
-  background: #fffffa;
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-track:hover,
+::-webkit-scrollbar-track:active,
+::-webkit-scrollbar-track-piece,
+::-webkit-scrollbar-track-piece:hover,
+::-webkit-scrollbar-track-piece:active,
+::-webkit-scrollbar-corner {
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
-::-webkit-scrollbar-thumb {
-  background: #170306;
-}
-::-webkit-scrollbar-thumb:hover {
+::-webkit-scrollbar-thumb,
+::-webkit-scrollbar-thumb:hover,
+::-webkit-scrollbar-thumb:active {
   background: #e3243b;
+  border: none;
+  border-radius: 999px;
+  box-shadow: none;
+}
+@supports not selector(::-webkit-scrollbar) {
+  * { scrollbar-color: #e3243b transparent; scrollbar-width: thin; }
 }

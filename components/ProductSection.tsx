@@ -26,8 +26,8 @@ function Product({ product }: { product: (typeof products)[number] }) {
         </div>
       </div>
 
-      <h3 id={`${product.id}-name`} className="mt-4 text-sm sm:text-base md:text-lg font-semibold leading-snug sm:min-h-[2.75em]">{product.name}</h3>
-      <p className="mt-2 text-xs sm:text-sm md:text-base text-[#170306]/70">{product.price}</p>
+      <h3 id={`${product.id}-name`} className="mt-4 text-[12.6px]/[20px] sm:text-[14.4px]/[24px] md:text-[16.2px]/[28px] font-semibold leading-snug sm:min-h-[2.75em]">{product.name}</h3>
+      <p className="mt-2 text-[10.8px]/[16px] sm:text-[12.6px]/[20px] md:text-[14.4px]/[24px] text-[#170306]/70">{product.price}</p>
       <QuickAdd product={{ ...product, image: `/images/products/${product.primary}`, amount: Number(product.price.replace(/[^0-9.]/g, "")) }} />
       <style jsx>{`
         .product-primary, .product-secondary { transition: opacity var(--motion-base) var(--ease-standard); }
@@ -50,12 +50,12 @@ export default function ProductSection() {
     <section aria-labelledby="new-arrivals-title" className="px-7 sm:px-10 md:px-14 lg:px-20 pb-24 md:pb-36 bg-[#fffffa] text-[#170306]">
       <div className="mx-auto max-w-[1400px]">
         <hr className="border-0 border-t border-[#170306]/20" />
-        <h2 id="new-arrivals-title" className="pt-10 md:pt-14 mb-8 md:mb-12 text-xl sm:text-2xl md:text-3xl font-semibold tracking-[0.12em] text-left">WOMEN’S NEW ARRIVALS</h2>
+        <h2 id="new-arrivals-title" className="pt-10 md:pt-14 mb-8 md:mb-12 text-[18px]/[28px] sm:text-[21.6px]/[32px] md:text-[27px]/[36px] font-semibold tracking-[0.12em] text-left">WOMEN’S NEW ARRIVALS</h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-3 sm:gap-x-6 md:gap-x-10 lg:gap-x-8 gap-y-8 md:gap-y-12 items-start">
           {products.map((product) => <Product key={product.id} product={product} />)}
         </div>
         <div className="mt-10 md:mt-12">
-          <button type="button" className="inline-flex items-center gap-6 border border-[#170306]/60 px-5 sm:px-7 py-4 text-xs font-semibold tracking-[0.2em] transition-colors hover:bg-[#170306] hover:text-[#fffffa]">
+          <button type="button" className="inline-flex items-center gap-6 border border-[#170306]/60 px-5 sm:px-7 py-4 text-[10.8px]/[16px] font-semibold tracking-[0.2em] transition-colors hover:bg-[#170306] hover:text-[#fffffa]">
             EXPLORE NEW ARRIVALS <span aria-hidden="true">→</span>
           </button>
         </div>

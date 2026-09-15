@@ -97,8 +97,8 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
 
           <nav className="secondary-nav" aria-label="Explore lululemon">
             <ul className="secondary-list">
-              {SECONDARY_ITEMS.map((item) => (
-                <li key={item.label}>
+              {SECONDARY_ITEMS.map((item, index) => (
+                <li key={item.label} className="secondary-item" style={{ "--item-index": index } as React.CSSProperties}>
                   {item.href ? (
                     <a href={item.href} onClick={onClose} className="secondary-link">
                       {item.label}
@@ -115,11 +115,35 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
         </div>
       </div>
 
+      <p className="menu-credit">© lululemon athletica 1818 Cornwall Ave, Vancouver BC V6J 1C7<span className="credit-byline">lululemon: reimagined by Azib 2026</span></p>
+
       <style jsx>{`
+        .menu-credit {
+          position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
+          width: max-content;
+          max-width: calc(100% - 48px);
+          bottom: calc(48px + env(safe-area-inset-bottom, 0px));
+          margin: 0;
+          padding: 8px 14px;
+          color: white;
+          background: transparent;
+          font-size: 11px;
+          font-weight: 400;
+          line-height: 1.4;
+          text-align: center;
+          z-index: 1;
+        }
+        .credit-byline { display: block; margin-top: 8px; }
+        @media (max-height: 800px) and (max-width: 767px), (max-height: 550px) {
+          .menu-scroll { padding-bottom: 112px; }
+        }
+
         .menu-canvas {
           --menu-ease: var(--ease-emphasized);
           position: fixed;
-          inset: 48px var(--lock-gap, 0px) 0 0;
+          inset: 0;
           z-index: 40;
           outline: none;
           background: #e3243b;
@@ -153,7 +177,7 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
           max-width: 1400px;
           min-height: 100%;
           margin: 0 auto;
-          padding: 64px clamp(28px, 6vw, 100px) max(56px, calc(36px + env(safe-area-inset-bottom, 0px)));
+          padding: 112px clamp(28px, 6vw, 100px) max(56px, calc(36px + env(safe-area-inset-bottom, 0px)));
           display: grid;
           grid-template-columns: minmax(0, 1fr);
           align-content: center;
@@ -170,8 +194,8 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
         .menu-open .primary-item {
           opacity: 1;
           transform: translateY(0);
-          transition-duration: var(--motion-base);
-          transition-delay: calc(40ms + var(--item-index) * 35ms);
+          transition-duration: 550ms;
+          transition-delay: calc(40ms + var(--item-index) * 50ms);
         }
         .primary-link {
           display: flex;
@@ -202,16 +226,16 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
         .primary-link:focus-visible .link-arrow { opacity: 1; transform: translateX(0); }
         .primary-list:has(.primary-link:focus-visible) .primary-link:not(:focus-visible) { opacity: 0.6; }
         a:focus-visible { outline: 1px solid #fff8ef; outline-offset: 6px; border-radius: 2px; }
-        .secondary-nav {
+        .secondary-item {
           opacity: 0;
           transform: translateY(8px);
           transition: opacity var(--motion-fast) var(--ease-standard), transform var(--motion-base) var(--menu-ease);
         }
-        .menu-open .secondary-nav {
+        .menu-open .secondary-item {
           opacity: 1;
           transform: translateY(0);
-          transition-duration: var(--motion-base);
-          transition-delay: 160ms;
+          transition-duration: 550ms;
+          transition-delay: calc(160ms + var(--item-index) * 45ms);
         }
         .secondary-list { display: grid; gap: 0; }
         .secondary-link, .secondary-label {
@@ -237,15 +261,15 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
           .primary-link:hover .link-arrow { opacity: 1; transform: translateX(0); }
           .secondary-link:hover { color: white; transform: translateX(5px); text-decoration-line: underline; }
         }
-        @media (min-width: 640px) { .menu-canvas { top: 50px; } }
+        @media (min-width: 640px) { .menu-layout { padding-top: 114px; } }
         @media (min-width: 768px) {
-          .menu-layout { grid-template-columns: minmax(0, 65fr) minmax(0, 35fr); gap: 0; align-items: center; padding-top: 80px; padding-bottom: 80px; }
+          .menu-layout { grid-template-columns: minmax(0, 65fr) minmax(0, 35fr); gap: 0; align-items: center; padding-top: 130px; padding-bottom: 80px; }
           .secondary-nav { padding-left: clamp(24px, 4vw, 64px); }
           .primary-list { gap: 8px; }
         }
         @media (prefers-reduced-motion: reduce) {
           .menu-canvas, .primary-item, .menu-open .primary-item,
-          .secondary-nav, .menu-open .secondary-nav,
+          .secondary-item, .menu-open .secondary-item,
           .primary-link, .link-arrow, .secondary-link {
             transition: none;
             transform: none;

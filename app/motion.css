@@ -9,8 +9,8 @@
   --ease-standard: cubic-bezier(.2, .7, .3, 1);
   --ease-emphasized: cubic-bezier(.22, 1, .36, 1);
 }
-/* Reserve the scrollbar lane through modal opening and closing. */
-html { scrollbar-gutter: stable; }
+/* Do not reserve an extra scrollbar lane; scroll lock compensates when needed. */
+html { scrollbar-gutter: auto; }
 button, a { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 button { transition-duration: var(--motion-fast); transition-timing-function: var(--ease-standard); }
 button:not(:disabled):active { opacity: .78; }

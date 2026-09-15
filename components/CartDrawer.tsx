@@ -52,27 +52,28 @@ export default function CartDrawer() {
     <div className="backdrop" onClick={() => setOpen(false)} />
     <aside ref={panel} onTransitionEnd={event => { if (event.target === event.currentTarget && event.propertyName === "transform" && isOpen && !panel.current?.contains(document.activeElement)) close.current?.focus({ preventScroll: true }); }} role="dialog" aria-modal={isOpen ? true : undefined} aria-labelledby="cart-title" className="drawer">
       <div className="shrink-0 flex items-center justify-between border-b border-[#170306]/20 px-6 sm:px-8 py-5">
-        <h2 id="cart-title" className="text-2xl font-semibold">Your bag <span className="text-base opacity-60">({count})</span></h2>
+        <h2 id="cart-title" className="text-[21.6px]/[32px] font-semibold">Your bag <span className="text-[14.4px]/[24px] opacity-60">({count})</span></h2>
         <button ref={close} onClick={() => setOpen(false)} type="button" aria-label="Close shopping bag" className="h-10 w-10 text-3xl">×</button>
       </div>
       <div className="items px-6 sm:px-8">
-        {!items.length ? <p className="py-8 text-lg opacity-70">Your bag is empty.</p> : <ul>
+        {!items.length ? <p className="py-8 text-[16.2px]/[28px] opacity-70">Your bag is empty.</p> : <ul>
           {items.map(item => <li key={item.key} className="flex gap-4 overflow-hidden border-b border-[#170306]/20 py-6">
             <div className="relative w-24 shrink-0 aspect-[5/6] self-start border border-[#170306]/20"><Image src={item.image} alt={item.name} fill unoptimized className="object-contain" sizes="96px" /></div>
             <div className="min-w-0 flex-1">
-              <h3 className="text-base font-semibold leading-snug">{item.name}</h3>
-              {item.colour && <p className="mt-1 text-sm opacity-70">{item.colour}</p>}
-              <p className="mt-2 text-sm">Size: {item.size}</p>
-              <p className="mt-1 text-sm">{item.price}</p>
-              <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm"><span>Qty: {item.quantity}</span><button type="button" className="underline underline-offset-4" aria-label={`Remove ${item.name}${item.colour ? ` — ${item.colour}` : ""}, size ${item.size}`} onClick={event => remove(item.key, event.currentTarget)}>Remove</button></div>
+              <h3 className="text-[14.4px]/[24px] font-semibold leading-[22px]">{item.name}</h3>
+              {item.colour && <p className="mt-1 text-[12.6px]/[20px] opacity-70">{item.colour}</p>}
+              <p className="mt-2 text-[12.6px]/[20px]">Size: {item.size}</p>
+              <p className="mt-1 text-[12.6px]/[20px]">{item.price}</p>
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-[12.6px]/[20px]"><span>Qty: {item.quantity}</span><button type="button" className="underline underline-offset-4" aria-label={`Remove ${item.name}${item.colour ? ` — ${item.colour}` : ""}, size ${item.size}`} onClick={event => remove(item.key, event.currentTarget)}>Remove</button></div>
             </div>
           </li>)}
         </ul>}
       </div>
       <div className="summary border-t border-[#170306]/20 px-6 sm:px-8 pt-5">
-        <div className="flex justify-between text-lg font-semibold"><span>Subtotal</span><span>{money(subtotal)}</span></div>
-        <p className="mt-1 text-sm opacity-70">{count} {count === 1 ? "item" : "items"}</p>
-        <button type="button" disabled className="mt-5 w-full bg-[#e3243b] text-white py-4 text-xs font-semibold tracking-[0.2em] disabled:cursor-default">CHECKOUT</button>
+        <div className="flex justify-between text-[16.2px]/[28px] font-semibold"><span>Subtotal</span><span>{money(subtotal)}</span></div>
+        <p className="mt-1 text-[12.6px]/[20px] opacity-70">{count} {count === 1 ? "item" : "items"}</p>
+        <p className="mt-5 mb-2 text-[10.8px]/[16px] opacity-70">This is a frontend mockup; checkout is disabled.</p>
+        <button type="button" disabled className="w-full rounded-lg bg-[#e3243b] text-white py-4 text-[10.8px]/[16px] font-semibold tracking-[0.2em] disabled:cursor-default">CHECKOUT</button>
       </div>
     </aside>
     <style jsx>{`

@@ -226,6 +226,8 @@ export default function Header() {
         </div>
 
       <style jsx>{`
+        .menu-control { appearance: none; border: 0; outline: none; box-shadow: none; background: transparent; }
+        .menu-control:focus-visible { outline: 1px solid rgba(255,255,255,.8); outline-offset: -4px; border-radius: 6px; }
         .cart-count { position: absolute; top: -7px; right: -9px; min-width: 16px; height: 16px; padding: 0 3px; display: grid; place-items: center; background: #fffffa; color: #e3243b; border-radius: 50%; font-size: 10px; line-height: 1; animation: cart-count-in var(--motion-base) ease-out; }
         @keyframes cart-count-in { from { opacity: .5; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
         @media (prefers-reduced-motion: reduce) { .cart-count { animation: none; } }
