@@ -14,6 +14,7 @@ export interface CartItem extends PurchaseProduct { key: string; size: string; q
 interface CartState {
   items: CartItem[]; count: number; subtotal: number; isOpen: boolean; revision: number;
   setOpen: (open: boolean) => void;
+  isLoginOpen: boolean; setLoginOpen: (open: boolean) => void;
   addItem: (product: PurchaseProduct, size: string) => void;
   removeItem: (key: string) => void;
 }
@@ -21,7 +22,11 @@ const CartActionsContext = createContext<Pick<CartState, "addItem"> | null>(null
 const CartContext = createContext<CartState | null>(null);
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
-  const [isOpen, setOpen] = useState(false);
+  const [panel, setPanel] = useState<"cart" | "login" | null>(null);
+  const isOpen = panel === "cart";
+  const isLoginOpen = panel === "login";
+  const setOpen = useCallback((open: boolean) => setPanel(current => open ? "cart" : current === "cart" ? null : current), []);
+  const setLoginOpen = useCallback((open: boolean) => setPanel(current => open ? "login" : current === "login" ? null : current), []);
   const [revision, setRevision] = useState(0);
   const addItem = useCallback((product: PurchaseProduct, size: string) => {
     if (!product.sizes.includes(size)) return;
@@ -31,9 +36,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
       : [...current, { ...product, key, size, quantity: 1 }]);
     setRevision(current => current + 1);
     setOpen(true);
-  }, []);
+  }, [setOpen]);
   const actions = useMemo(() => ({ addItem }), [addItem]);
-  return <CartActionsContext.Provider value={actions}><CartContext.Provider value={{ items, isOpen, setOpen, revision, addItem,
+  return <CartActionsContext.Provider value={actions}><CartContext.Provider value={{ items, isOpen, setOpen, isLoginOpen, setLoginOpen, revision, addItem,
     count: items.reduce((sum, item) => sum + item.quantity, 0),
     subtotal: items.reduce((sum, item) => sum + item.amount * item.quantity, 0),
     removeItem: key => setItems(current => current.filter(item => item.key !== key)),

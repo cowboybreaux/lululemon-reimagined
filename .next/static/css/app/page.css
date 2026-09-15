@@ -20,12 +20,30 @@
 }
 
 /* Quick Add uses currentColor for borders: retain its original border colors. */
-.MetalVentSection_section__JH82K button:is([aria-pressed], [class~="add"]) {
+.MetalVentSection_section__JH82K button[class~="add"] {
   border-color: #ffe7c2;
 }
 
-.MetalVentSection_section__JH82K button[aria-pressed="true"] {
-  border-color: #361502;
+.MetalVentSection_section__JH82K button[class~="size"][aria-pressed] {
+  border-color: #fff;
+  background: transparent;
+  color: #fff !important;
+  box-shadow: none;
+  transition: background-color 200ms ease-out, color 200ms ease-out;
+}
+.MetalVentSection_section__JH82K button[class~="size"][aria-pressed="true"] {
+  background: #fff;
+  color: #000 !important;
+}
+.MetalVentSection_section__JH82K button[class~="size"]:focus-visible {
+  outline: 1px solid #fff;
+  outline-offset: 2px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .MetalVentSection_section__JH82K button[class~="size"][aria-pressed="false"]:hover { background: rgba(255,255,255,.1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .MetalVentSection_section__JH82K button[class~="size"][aria-pressed] { transition: none; }
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -37,5 +55,12 @@
 /* The campaign heading alone uses the supplied display face. */
 .MetalVentSection_section__JH82K h2 {
   font-family: "Metal Vent Abduction", sans-serif;
+}
+
+/* Match the description's px-20 wrapper and centered max-w-7xl container. */
+@media (min-width: 1024px) {
+  .MetalVentSection_section__JH82K h2 {
+    padding-left: max(5rem, calc((100% - 80rem) / 2));
+  }
 }
 

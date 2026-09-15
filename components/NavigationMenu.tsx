@@ -48,9 +48,9 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
     // The existing header's X remains the close control, outside this canvas.
     const trapFocus = (event: KeyboardEvent) => {
       if (event.key !== "Tab") return;
-      const links = Array.from(panel.querySelectorAll<HTMLAnchorElement>("a[href]"));
+      const links = Array.from(panel.querySelectorAll<HTMLElement>("input, a[href]"));
       const controls = trigger ? [trigger, ...links] : links;
-      const current = controls.indexOf(document.activeElement as HTMLAnchorElement);
+      const current = controls.indexOf(document.activeElement as HTMLElement);
       const next = current < 0
         ? (event.shiftKey ? controls.length - 1 : (trigger ? 1 : 0))
         : (current + (event.shiftKey ? -1 : 1) + controls.length) % controls.length;
@@ -78,6 +78,11 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
     >
       <div className="menu-scroll">
         <div className="menu-layout">
+          <form className="menu-search" role="search" onSubmit={event => event.preventDefault()}>
+            <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 5 5" /></svg>
+            <label className="sr-only" htmlFor="menu-search-input">Search gear, activity...</label>
+            <input id="menu-search-input" type="search" placeholder="Search gear, activity..." autoComplete="off" />
+          </form>
           <nav className="primary-nav" aria-label="Shop">
             <ul className="primary-list">
               {PRIMARY_ITEMS.map((item, index) => (
@@ -118,6 +123,30 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
       <p className="menu-credit">© lululemon athletica 1818 Cornwall Ave, Vancouver BC V6J 1C7<span className="credit-byline">lululemon: reimagined by Azib 2026</span></p>
 
       <style jsx>{`
+        .secondary-nav { position: relative; top: -24px; }
+        .menu-search {
+          grid-column: 1 / -1;
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          width: 100%;
+          min-width: 0;
+          min-height: 54px;
+          padding: 0 24px;
+          border-radius: 999px;
+          background: white;
+          color: #170306;
+          opacity: 0;
+          transform: translateY(12px);
+          transition: opacity 180ms var(--menu-ease), transform 300ms var(--menu-ease);
+        }
+        .menu-open .menu-search { opacity: 1; transform: translateY(0); transition-duration: 550ms; transition-delay: 0ms; }
+        .menu-search svg { flex-shrink: 0; }
+        .menu-search input { flex: 1; min-width: 0; width: 100%; height: 54px; border: 0; outline: none; background: transparent; color: #170306; font: inherit; font-size: 12px; }
+        .menu-search input::placeholder { color: rgba(23,3,6,.55); opacity: 1; }
+        .menu-search:focus-within { outline: 2px solid rgba(255,255,255,.55); outline-offset: 4px; }
+        @media (min-width: 768px) { .menu-search { margin-bottom: 36px; } }
+
         .menu-credit {
           position: absolute;
           left: 50%;
@@ -268,6 +297,7 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
           .primary-list { gap: 8px; }
         }
         @media (prefers-reduced-motion: reduce) {
+          .menu-search, .menu-open .menu-search,
           .menu-canvas, .primary-item, .menu-open .primary-item,
           .secondary-item, .menu-open .secondary-item,
           .primary-link, .link-arrow, .secondary-link {

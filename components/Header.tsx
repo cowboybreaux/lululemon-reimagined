@@ -9,7 +9,7 @@ const MARQUEE_TEXT =
   "ENJOY EXCLUSIVE GRAB PAYLATER COUPONS AT CHECKOUT   ●   FREE SHIPPING AND FREE RETURNS FOR A LIMITED TIME    ●   SIGN UP FOR 10% OFF YOUR FIRST ORDER INCLUDING EARLY ACCESS TO OUR PRODUCT DROPS   ●   ";
 
 export default function Header() {
-  const { count, revision, setOpen: setCartOpen } = useCart();
+  const { count, revision, setOpen: setCartOpen, setLoginOpen } = useCart();
   const [isOpen, setIsOpen] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
   const [hasPassedHero, setHasPassedHero] = useState(false);
@@ -77,7 +77,7 @@ export default function Header() {
               {/* Top */}
               <span
                 className={`absolute left-0 top-[12px] block h-[3px] w-7 bg-white
-                transition-[transform,opacity] duration-[var(--motion-base)] ease-[var(--ease-emphasized)]
+                transition-opacity duration-[180ms] ease-out
                 ${
                   isOpen
                     ? "rotate-45 translate-y-0"
@@ -88,18 +88,18 @@ export default function Header() {
               {/* Middle */}
               <span
                 className={`absolute left-0 top-[12px] block h-[3px] w-7 bg-white
-                transition-[transform,opacity] duration-[var(--motion-base)] ease-[var(--ease-emphasized)]
+                transition-opacity duration-[180ms] ease-out
                 ${
                   isOpen
-                    ? "opacity-0 scale-x-0"
-                    : "opacity-100 scale-x-100"
+                    ? "opacity-0"
+                    : "opacity-100"
                 }`}
               />
 
               {/* Bottom */}
               <span
                 className={`absolute left-0 top-[12px] block h-[3px] w-7 bg-white
-                transition-[transform,opacity] duration-[var(--motion-base)] ease-[var(--ease-emphasized)]
+                transition-opacity duration-[180ms] ease-out
                 ${
                   isOpen
                     ? "-rotate-45 translate-y-0"
@@ -144,6 +144,7 @@ export default function Header() {
             <button
               type="button"
               aria-label="Profile"
+              onClick={() => { setIsOpen(false); setLoginOpen(true); }}
               className="flex items-center justify-center text-white"
             >
               <svg
@@ -227,9 +228,17 @@ export default function Header() {
 
       <style jsx>{`
         .menu-control { appearance: none; border: 0; outline: none; box-shadow: none; background: transparent; }
+        .menu-control, .right-controls button {
+          scale: none; translate: none; rotate: none;
+          animation: none;
+          transition: none;
+        }
+        .right-controls button { transform: none; }
+        .menu-control:hover, .menu-control:active,
+        .right-controls button:hover, .right-controls button:active { opacity: 1; }
         .menu-control:focus-visible { outline: 1px solid rgba(255,255,255,.8); outline-offset: -4px; border-radius: 6px; }
         .cart-count { position: absolute; top: -7px; right: -9px; min-width: 16px; height: 16px; padding: 0 3px; display: grid; place-items: center; background: #fffffa; color: #e3243b; border-radius: 50%; font-size: 10px; line-height: 1; animation: cart-count-in var(--motion-base) ease-out; }
-        @keyframes cart-count-in { from { opacity: .5; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes cart-count-in { from { opacity: .5; } to { opacity: 1; } }
         @media (prefers-reduced-motion: reduce) { .cart-count { animation: none; } }
         .header-shell {
           top: 0;
@@ -303,7 +312,7 @@ export default function Header() {
         .marquee-background { background: linear-gradient(to right, transparent, #e3243b 10%, #e3243b 90%, transparent); }
         .marquee-background::after { content: ""; position: absolute; inset: 0; background: #e3243b; opacity: 1; transition: opacity var(--motion-slow) var(--ease-standard); }
         .marquee-docked .marquee-background::after { opacity: 0; }
-        .menu-control, .right-controls { transition: transform var(--motion-slow) var(--ease-emphasized); }
+        .right-controls { transition: transform var(--motion-slow) var(--ease-emphasized); }
         .header-pill .menu-control { transform: translateX(8px); }
         .header-pill .right-controls { transform: translateX(-8px); }
         @media (min-width: 1024px) {
