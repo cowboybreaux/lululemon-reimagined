@@ -74,8 +74,8 @@ export default function BottomHeader() {
           ))}
         </div>
         <p className="mt-3 text-center text-[9.9px] sm:text-[11px] font-normal leading-[1.35] tracking-[0.02em]">
-          © lululemon athletica 1818 Cornwall Ave, Vancouver BC V6J 1C7
-          <span className="block mt-1">// lululemon: reimagined by Azib 2026</span>
+          // UNOFFICIAL STUDENT UI REDESIGN — DESIGNED & DEVELOPED BY AZIB, 2026
+          <span className="block mt-2 text-[9px] sm:text-[10px] opacity-70">lululemon and associated trademarks and brand assets are the property of their respective owners. Not affiliated with or endorsed by lululemon athletica inc.</span>
         </p>
         <div className="mx-auto mt-3 grid max-w-sm grid-cols-2 gap-2 sm:gap-3">
           {["PRIVACY POLICY", "TERMS OF USE"].map((label) => (

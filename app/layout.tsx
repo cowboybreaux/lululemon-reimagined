@@ -4,6 +4,7 @@ import "./globals.css";
 import "./motion.css";
 import { CartProvider } from "@/components/CartContext";
 import LoginPanel from "@/components/LoginPanel";
+import EntryDisclaimer from "@/components/EntryDisclaimer";
 import CartDrawer from "@/components/CartDrawer";
 
 export const metadata: Metadata = {
@@ -21,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${calibre.variable}`}>
       <body className="bg-[#fffffa] text-[#170306] antialiased selection:bg-lulu-red selection:text-white font-calibre">
-        <CartProvider>{children}<CartDrawer /><LoginPanel /></CartProvider>
+        <EntryDisclaimer><CartProvider>{children}<CartDrawer /><LoginPanel /></CartProvider></EntryDisclaimer>
       </body>
     </html>
   );

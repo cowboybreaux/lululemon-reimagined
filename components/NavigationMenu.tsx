@@ -120,9 +120,10 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
         </div>
       </div>
 
-      <p className="menu-credit">© lululemon athletica 1818 Cornwall Ave, Vancouver BC V6J 1C7<span className="credit-byline">lululemon: reimagined by Azib 2026</span></p>
+      <p className="menu-credit">// UNOFFICIAL STUDENT UI REDESIGN — DESIGNED & DEVELOPED BY AZIB, 2026<span className="credit-byline">lululemon and associated trademarks and brand assets are the property of their respective owners. Not affiliated with or endorsed by lululemon athletica inc.</span></p>
 
       <style jsx>{`
+        .menu-search, .primary-nav { position: relative; top: -40px; }
         .secondary-nav { position: relative; top: -24px; }
         .menu-search {
           grid-column: 1 / -1;
@@ -151,7 +152,7 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
           position: absolute;
           left: 50%;
           transform: translateX(-50%);
-          width: max-content;
+          width: 760px;
           max-width: calc(100% - 48px);
           bottom: calc(48px + env(safe-area-inset-bottom, 0px));
           margin: 0;
@@ -164,9 +165,9 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
           text-align: center;
           z-index: 1;
         }
-        .credit-byline { display: block; margin-top: 8px; }
+        .credit-byline { display: block; margin-top: 8px; font-size: 10px; opacity: .7; }
         @media (max-height: 800px) and (max-width: 767px), (max-height: 550px) {
-          .menu-scroll { padding-bottom: 112px; }
+          .menu-scroll { padding-bottom: 160px; }
         }
 
         .menu-canvas {
